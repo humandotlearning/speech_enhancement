@@ -20,6 +20,13 @@ def notebook_code_cells_for(path):
     ]
 
 
+def notebook_code_cell_containing(path, needle):
+    for cell in notebook_code_cells_for(path):
+        if needle in cell:
+            return cell
+    raise AssertionError(f"Could not find code cell containing {needle!r} in {path}")
+
+
 def notebook_text():
     return notebook_text_for(NOTEBOOK)
 
@@ -94,6 +101,21 @@ class DeepFilterResembleVideoRemuxNotebookTest(unittest.TestCase):
         self.assertIn("DRIVE_VIDEO_PATH", code)
         self.assertIn("files.upload()", code)
         self.assertIn("drive.mount", code)
+
+    def test_focused_notebook_upload_cell_matches_working_preview_pattern(self):
+        upload_cell = notebook_code_cell_containing(REMUX_NOTEBOOK, "files.upload()")
+
+        self.assertIn("if target_video.exists():", upload_cell)
+        self.assertIn("target_video.unlink()", upload_cell)
+        self.assertIn('print("Using video:", VIDEO_PATH)', upload_cell)
+        self.assertIn('print("Video size MB:", round(VIDEO_PATH.stat().st_size / 1024 / 1024, 2))', upload_cell)
+        self.assertNotIn("display(Video(", upload_cell)
+
+    def test_focused_notebook_final_video_preview_uses_working_embed_pattern(self):
+        preview_cell = notebook_code_cell_containing(REMUX_NOTEBOOK, "Final video with enhanced audio")
+
+        self.assertIn("display(Video(str(FINAL_VIDEO), embed=False))", preview_cell)
+        self.assertNotIn("display(Video(filename=str(FINAL_VIDEO), embed=True))", preview_cell)
 
     def test_focused_notebook_uses_resilient_model_setup(self):
         text = notebook_text_for(REMUX_NOTEBOOK)
