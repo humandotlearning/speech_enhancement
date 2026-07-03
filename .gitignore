@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Notebook/runtime noise
+.ipynb_checkpoints/
+
+# Local agent/app state
+.agents/
+.codex/
+
+# Generated experiment outputs
+audio_experiment_outputs.zip
+*.zip
+*.crdownload
+outputs/
+audio_experiments/
+
+# Downloaded media inputs kept only as local examples
+examples/source/*.mp4
+examples/source/*.mov
+examples/source/*.mkv
+examples/source/*.wav
+examples/source/*.mp3
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.mp3
